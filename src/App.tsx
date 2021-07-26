@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Footer from './Components/Footer/Footer';
 import Header from './Components/Header/Header';
+import ImagePageContainer from './Components/ImagePage/ImagePageContainer';
 import Nav from './Components/Nav/Nav'
 
 const App: React.FunctionComponent = () => {
@@ -10,6 +11,7 @@ const App: React.FunctionComponent = () => {
 		<Header />
 		<Nav />
 		<div id='content' className='content'>
+			<ImagePageContainer/>
 		</div>
 		<Footer />
     </div>
