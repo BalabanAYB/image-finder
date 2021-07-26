@@ -18,8 +18,8 @@ type GetImagesActionType = {
 
 const setImages = (payload: PayloadType): GetImagesActionType => ({ type: SET_IMAGES, payload });
 
-export const getImages = (text: string, page: number) => async (dispatch: Dispatch<ActionTypes>) => {
-	const response = await imageAPI.searchImage(text, page);
+export const getImages = (text: string, page: number, size: number) => async (dispatch: Dispatch<ActionTypes>) => {
+	const response = await imageAPI.searchImage(text, page, size);
 	if (response.stat === 'ok') {
 		dispatch(setImages(response.photos));
 	}
@@ -34,7 +34,7 @@ export type PhotoType = {
 	ispublic: number;
 	isfriend: number;
 	isfamily: number;
-	src?: string;
+	src?: string | undefined;
 	server?: string;
 	secret?: string;
 };

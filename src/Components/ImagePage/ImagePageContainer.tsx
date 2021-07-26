@@ -12,14 +12,14 @@ type MapStatePropsType = {
 }
 
 type MapDispatchPropsType = {
-	getImages?: (text: string, count: number) => any
+	getImages?: (text: string, count: number, size: number) => any
 }
 
 const ImagePageContainer: React.FC<PropsPageType> = ({photos, getImages}) => {
 
 	useEffect(() => {
 		if(getImages) {
-			getImages('cars', 1)
+			getImages('cars', 1, 30)
 			.then(console.log(photos))
 		}
 

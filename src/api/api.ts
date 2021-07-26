@@ -7,8 +7,8 @@ const instance = axios.create({
 })
 
 export const imageAPI = {
-	searchImage (searchText: string, page: number) {
-		return instance.get(`?method=flickr.photos.search&api_key=${api_key}&text=${searchText}&page=${page}&format=json&nojsoncallback=1`)
+	searchImage (searchText: string, page: number, size: number) {
+		return instance.get(`?method=flickr.photos.search&api_key=${api_key}&text=${searchText}&page=${page}&per_page=${size}&format=json&nojsoncallback=1`)
 		.then(res => res.data)
 	},
 	getImages (serverId: string, id: string, secret: string) {
