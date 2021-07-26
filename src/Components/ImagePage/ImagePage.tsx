@@ -9,7 +9,7 @@ const ImagePage: React.FC<PropsPageType> = ({photos}) => {
 	let photoGroup: any
 
 	if (photos?.length) {
-		photoGroup = photos.map(photo => <ImageCard key={photo.id} src={'' && photo.src} title={photo.title} />)
+		photoGroup = photos.map(photo => <ImageCard key={photo.id} src={photo.src ? photo.src : ''} title={photo.title ? photo.title : ''} />)
 	}
 
 	return <div className={style.page}>

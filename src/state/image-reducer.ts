@@ -9,6 +9,7 @@ type PayloadType = {
 	page: number;
 	perpage: number;
 	photo: Array<PhotoType>;
+	pages: number;
 };
 
 type GetImagesActionType = {
@@ -76,6 +77,7 @@ const ImageReducer = (state = initialState, action: ActionTypes): InitialStateTy
 				],
 				totalCount: action.payload.total,
 				currentPageCount: action.payload.page,
+				pages: action.payload.pages,
 				pageSize: action.payload.perpage
 			};
 		}
