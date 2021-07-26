@@ -1,25 +1,34 @@
-import React from 'react'
-import { Field, reduxForm } from 'redux-form'
+import React from 'react';
+import { Field, InjectedFormProps, reduxForm } from 'redux-form';
+import style from './ImageForm.module.css';
 
-const Form: React.FC = ({}) => {
-return <form >
-<Field name={'image'} component={'input'} />
-</form>
-}
+type ImageFormValuesType = {
+	image: string;
+};
 
-const FormRedux = reduxForm({form: 'image'})(Form)
+type OwnPropsType = {
+	searchImage: (text: string) => any;
+};
 
+const Form: React.FC<InjectedFormProps<ImageFormValuesType>> = ({ handleSubmit }) => {
+	return (
+		<form onSubmit={handleSubmit}>
+			<Field name={'image'} component={'input'} />
+		</form>
+	);
+};
 
-const ImageForm: React.FC = (props) => {
+const FormRedux = reduxForm<ImageFormValuesType>({ form: 'image' })(Form);
 
-	const onSubmit = () => {
-console.log(FormData)
-	}
-	return <div>
-		<FormRedux onSubmit={onSubmit} />
-	</div>
-}
+const ImageForm: React.FC<OwnPropsType> = ({ searchImage }) => {
+	const onSubmit = (formData: ImageFormValuesType) => {
+		searchImage(formData.image);
+	};
+	return (
+		<div>
+			<FormRedux onChange={onSubmit} />
+		</div>
+	);
+};
 
-
-export default ImageForm
-
+export default ImageForm;

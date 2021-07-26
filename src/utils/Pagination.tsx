@@ -31,9 +31,9 @@ const Pagination: React.FC<PropsType> = ({currentPageCount, setCurrentPageCount,
 
 	return <div className={style.paginator} >
 <ButtonGroup color="primary" aria-label="contained primary button group">
-  <Button onClick={() => setCurrentPageCount(currentPageCount - 1)} >&lt;Back</Button>
+  <Button disabled={currentPageCount === 1} onClick={() => setCurrentPageCount(currentPageCount - 1)} >&lt;Back</Button>
   <Button>{`${currentPageCount} of ${pages}`}</Button>
-  <Button onClick={() => setCurrentPageCount(currentPageCount + 1)} >Forward&gt;</Button>
+  <Button disabled={currentPageCount === pages} onClick={() => setCurrentPageCount(currentPageCount + 1)} >Forward&gt;</Button>
 </ButtonGroup>
 	</div>
 }

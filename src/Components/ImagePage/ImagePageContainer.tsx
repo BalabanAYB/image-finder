@@ -5,6 +5,7 @@ import { AppStateType } from '../../state/store'
 import ImagePage from './ImagePage'
 import Pagination from '../../utils/Pagination'
 import style from './ImagePage.module.css'
+import ImageForm from '../ImageForm/ImageForm'
 
 export type PropsPageType = MapStatePropsType & MapDispatchPropsType
 
@@ -20,22 +21,27 @@ type MapDispatchPropsType = {
 const ImagePageContainer: React.FC<PropsPageType> = ({photos, getImages, pages}) => {
 
 	const [currentPageCount, setCurrentPageCount] = useState(1)
+	const [PageSizeCount, setPageSizeCount] = useState(30)
 
-	useEffect(() => {
+	/*useEffect(() => {
 		if(getImages) {
 			getImages('tesla', currentPageCount, 30)
 			.then(console.log(photos))
 		}
 
-	}, [currentPageCount])
+	}, [currentPageCount])*/
 
-
-
+	const searchImage = (text: string):any => {
+		if (getImages) {
+			getImages(text, currentPageCount, PageSizeCount)
+		}
+	}
 
 	return <div>
-		<input/>
+		<ImageForm searchImage={searchImage}/>
 		<Pagination pages={pages} currentPageCount={currentPageCount} setCurrentPageCount={setCurrentPageCount} />
 <ImagePage photos={photos}/>
+<Pagination pages={pages} currentPageCount={currentPageCount} setCurrentPageCount={setCurrentPageCount} />
 	</div>
 }
 

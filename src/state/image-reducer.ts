@@ -46,7 +46,6 @@ type InitialStateType = {
 	photos: Array<PhotoType> | null;
 	totalCount: number | null;
 	currentPageCount: number | null;
-	pageSize: number | null;
 	pages: number | null;
 };
 
@@ -54,7 +53,6 @@ const initialState: InitialStateType = {
 	photos: null,
 	totalCount: null,
 	currentPageCount: null,
-	pageSize: null,
 	pages: null
 };
 
@@ -77,8 +75,7 @@ const ImageReducer = (state = initialState, action: ActionTypes): InitialStateTy
 				],
 				totalCount: action.payload.total,
 				currentPageCount: action.payload.page,
-				pages: action.payload.pages,
-				pageSize: action.payload.perpage
+				pages: action.payload.pages
 			};
 		}
 		default:
