@@ -3,6 +3,8 @@ import { Dispatch } from 'redux';
 import { imageAPI } from '../api/api';
 
 const SET_IMAGES = 'SET_IMAGES';
+const RESET = 'RESET';
+const SAVE_COUNT = 'SAVE_COUNT';
 
 type PayloadType = {
 	total: number;
@@ -17,7 +19,18 @@ type GetImagesActionType = {
 	payload: PayloadType;
 };
 
+type ResetActionType = {
+	type: typeof RESET;
+};
+
+type SaveCountActionType = {
+	type: typeof SAVE_COUNT;
+	count: number;
+};
+
 const setImages = (payload: PayloadType): GetImagesActionType => ({ type: SET_IMAGES, payload });
+export const reset = (): ResetActionType => ({ type: RESET });
+export const setSaveCount = (count: number): SaveCountActionType => ({ type: SAVE_COUNT, count });
 
 export const getImages = (text: string, page: number, size: number) => async (dispatch: Dispatch<ActionTypes>) => {
 	const response = await imageAPI.searchImage(text, page, size);
@@ -38,25 +51,28 @@ export type PhotoType = {
 	src?: string | undefined;
 	server?: string;
 	secret?: string;
+	tags?: string | null;
 };
 
-type ActionTypes = GetImagesActionType;
+type ActionTypes = GetImagesActionType | SaveCountActionType;
 
 type InitialStateType = {
 	photos: Array<PhotoType> | null;
 	totalCount: number | null;
 	currentPageCount: number | null;
 	pages: number | null;
+	count: number | null;
 };
 
 const initialState: InitialStateType = {
 	photos: null,
 	totalCount: null,
 	currentPageCount: null,
-	pages: null
+	pages: null,
+	count: 0
 };
 
-const ImageReducer = (state = initialState, action: ActionTypes): InitialStateType => {
+const ImageReducer = (state = initialState, action: ActionTypes | ResetActionType): InitialStateType => {
 	switch (action.type) {
 		case SET_IMAGES: {
 			return {
@@ -76,6 +92,22 @@ const ImageReducer = (state = initialState, action: ActionTypes): InitialStateTy
 				totalCount: action.payload.total,
 				currentPageCount: action.payload.page,
 				pages: action.payload.pages
+			};
+		}
+		case RESET: {
+			return {
+				...state,
+				photos: null,
+				totalCount: null,
+				currentPageCount: null,
+				pages: null
+			};
+		}
+
+		case SAVE_COUNT: {
+			return {
+				...state,
+				count: action.count
 			};
 		}
 		default:

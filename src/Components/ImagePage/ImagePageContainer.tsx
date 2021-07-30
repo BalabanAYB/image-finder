@@ -1,53 +1,97 @@
-import React, {useEffect, useState} from 'react'
-import { connect } from 'react-redux'
-import {getImages, PhotoType} from '../../state/image-reducer'
-import { AppStateType } from '../../state/store'
-import ImagePage from './ImagePage'
-import Pagination from '../../utils/Pagination'
-import style from './ImagePage.module.css'
-import ImageForm from '../ImageForm/ImageForm'
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { getImages, PhotoType, reset, setSaveCount } from '../../state/image-reducer';
+import { AppStateType } from '../../state/store';
+import ImagePage from './ImagePage';
+import Pagination from '../../utils/Pagination';
+import style from './ImagePage.module.css';
+import ImageForm from '../ImageForm/ImageForm';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
-export type PropsPageType = MapStatePropsType & MapDispatchPropsType
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff',
+    },
+  }),
+);
+
+export type PropsPageType = MapStatePropsType & MapDispatchPropsType & OwnPropsType;
 
 type MapStatePropsType = {
-	photos: Array<PhotoType> | null
-	pages?: number | null
-}
+	photos: Array<PhotoType> | null;
+	pages?: number | null;
+	remove?: boolean;
+	count?: number | null;
+	setRemove?: () => any;
+};
 
 type MapDispatchPropsType = {
-	getImages?: (text: string, count: number, size: number) => any
-}
+	getImages?: (text: string, count: number, size: number) => any;
+	reset?: () => any;
+	setSaveCount?: (count: number) => any;
+};
 
-const ImagePageContainer: React.FC<PropsPageType> = ({photos, getImages, pages}) => {
+type OwnPropsType = {
+	deleteButton?: any;
+};
 
-	const [currentPageCount, setCurrentPageCount] = useState(1)
-	const [PageSizeCount, setPageSizeCount] = useState(30)
+const ImagePageContainer: React.FC<PropsPageType> = ({ photos, getImages, pages, reset, setSaveCount, count }) => {
+	const [currentPageCount, setCurrentPageCount] = useState(1);
+	const [PageSizeCount, setPageSizeCount] = useState(30);
+	const [searchText, setSearchText] = useState('');
+	const [load, setLoad] = useState(false);
 
-	/*useEffect(() => {
-		if(getImages) {
-			getImages('tesla', currentPageCount, 30)
-			.then(console.log(photos))
-		}
-
-	}, [currentPageCount])*/
-
-	const searchImage = (text: string):any => {
+	useEffect(() => {
 		if (getImages) {
-			getImages(text, currentPageCount, PageSizeCount)
+			if (searchText !== '') {
+				const delayDebounceFn = setTimeout(() => {
+					setLoad(true)
+					getImages(searchText, currentPageCount, PageSizeCount).then(() => setLoad(false))
+				}, 500);
+				return () => {
+					clearTimeout(delayDebounceFn);
+				};
+			} else {
+				if (reset) {
+					reset();
+				}
+			}
 		}
-	}
+	}, [currentPageCount, searchText]);
 
-	return <div>
-		<ImageForm searchImage={searchImage}/>
-		<Pagination pages={pages} currentPageCount={currentPageCount} setCurrentPageCount={setCurrentPageCount} />
-<ImagePage photos={photos}/>
-<Pagination pages={pages} currentPageCount={currentPageCount} setCurrentPageCount={setCurrentPageCount} />
-	</div>
-}
+	const classes = useStyles();
 
-const mapStateToProps = (state:AppStateType): MapStatePropsType => ({
-photos: state.images.photos,
-pages: state.images.pages
-})
+	return (
+		<div className={style.container}>
+			<Backdrop className={classes.backdrop} open={load}>
+				<CircularProgress color="inherit" />
+			</Backdrop>
+			<ImageForm setCurrentPageCount={setCurrentPageCount} setSearchText={setSearchText} />
+			{searchText === '' || photos === null || pages === 0 ? (
+				<div>No images here. Would you try search for anything else?</div>
+			) : (
+				<>
+					{' '}
+					<Pagination
+						pages={pages}
+						currentPageCount={currentPageCount}
+						setCurrentPageCount={setCurrentPageCount}
+					/>
+					<ImagePage count={count} setSaveCount={setSaveCount} photos={photos} />
+				</>
+			)}
+		</div>
+	);
+};
 
-export default connect(mapStateToProps, {getImages})(ImagePageContainer)
+const mapStateToProps = (state: AppStateType): MapStatePropsType => ({
+	photos: state.images.photos,
+	pages: state.images.pages,
+	count: state.images.count
+});
+
+export default connect(mapStateToProps, { getImages, reset, setSaveCount })(ImagePageContainer);

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CloudIcon from '@material-ui/icons/Cloud';
@@ -7,7 +8,10 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import BookmarksIcon from '@material-ui/icons/Bookmarks';
-import style from './Nav.module.css'
+import Badge from '@material-ui/core/Badge';
+import style from './Nav.module.css';
+import { AppStateType } from '../../state/store';
+import { connect } from 'react-redux';
 const drawerWidth = 60;
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -28,12 +32,16 @@ const useStyles = makeStyles((theme: Theme) =>
 			position: 'relative'
 		},
 		drawerContainer: {
-			overflow: 'none'
+			overflow: 'none',
+			width: '60px',
+			height: '100%',
+			marginTop: '64px',
+			position: 'fixed'
 		},
 		drawerItem: {
 			display: 'flex',
 			justifyContent: 'center',
-			padding: '8px 0',
+			padding: '8px 0'
 		},
 
 		iconItem: {
@@ -46,11 +54,21 @@ const useStyles = makeStyles((theme: Theme) =>
 	})
 );
 
-const Nav: React.FC = () => {
+type MapStatePropsType = {
+	count: number | null;
+};
+
+let Nav: React.FC<MapStatePropsType> = ({ count }) => {
 	const classes = useStyles();
 
+	const [localCount, setLocalCount] = useState(localStorage.getItem('countLocalSave'));
+
+	useEffect(() => {
+		setLocalCount(localStorage.getItem('countLocalSave'));
+	}, [count]);
+
 	return (
-		<div id='nav' className={`${classes.root} ${style.nav}`}>
+		<div id="nav" className={`${classes.root} ${style.nav}`}>
 			<Drawer
 				className={classes.drawer}
 				variant="permanent"
@@ -62,16 +80,32 @@ const Nav: React.FC = () => {
 					<List>
 						{['', ''].map((text, index) => (
 							<ListItem className={classes.drawerItem} button key={text}>
-								<ListItemIcon className={classes.iconItem} >{index % 2 === 0 ? <CloudIcon /> : <BookmarksIcon />}</ListItemIcon>
+								<ListItemIcon className={classes.iconItem}>
+									{index % 2 === 0 ? (
+										<NavLink activeClassName={style.active} to="/search">
+											<CloudIcon />
+										</NavLink>
+									) : (
+										<NavLink activeClassName={style.active} to="/save_image">
+											{' '}
+											<Badge badgeContent={localCount} color="secondary">
+												<BookmarksIcon />
+											</Badge>
+										</NavLink>
+									)}
+								</ListItemIcon>
 							</ListItem>
 						))}
 					</List>
 					<Divider />
 				</div>
 			</Drawer>
-
 		</div>
 	);
 };
 
-export default Nav;
+const mapStateToProps = (state: AppStateType): MapStatePropsType => ({
+	count: state.images.count
+});
+
+export default connect(mapStateToProps, {})(Nav);
